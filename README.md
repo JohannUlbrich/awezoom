@@ -3,7 +3,8 @@
 Awesome library to zoom images or every content you want. In difference to all other zooming libraries your zoom container have scrollbars.
 
 ## Demo
-TODO
+[Demo](https://johannulbrich.github.io/awezoom/)
+Click to zoom to a certain point (left click = zoom in, right click = zoom out). 
 
 ## Installing
 
