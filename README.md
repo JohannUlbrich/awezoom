@@ -1,9 +1,9 @@
 # awezoom
 
-Awesome library to zoom images or every other content you want. In difference to all other zooming libs your zoom container have scrollbars.
+Awesome library to zoom images or every content you want. In difference to all other zooming libraries your zoom container have scrollbars.
 
 ## Demo
-
+TODO
 
 ## Installing
 
