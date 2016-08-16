@@ -1,0 +1,21 @@
+{
+  "name": "awezoom",
+  "authors": [
+    "Johann Ulbrich <info@johann-ulbrich.de>"
+  ],
+  "description": "",
+  "main": "src/awezoom.js",
+  "keywords": [
+    "zoom",
+    "scale",
+    "scroll"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}
