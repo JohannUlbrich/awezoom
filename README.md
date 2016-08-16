@@ -32,7 +32,7 @@ Create a container element and place your content inside. But just add one child
 new Awezoom('#zoom-container');
 ```
 
-## Initialization
+### Initialize with custom settings
 
 ```js
 // Initialize with custom settings
