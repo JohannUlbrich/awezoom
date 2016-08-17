@@ -1,0 +1,92 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Awezoom</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+        
+        img {
+            display: block;
+        }
+        
+        html,
+        body {
+            height: 100%;
+            width: 100%;
+        }
+        
+        #zoom-toolbar {
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+    </style>
+</head>
+<body>
+    <div id="zoom-container" style="background:#CCC; height:100%; width:100%;">
+        <img src="https://static.pexels.com/photos/28773/pexels-photo-28773.jpg" />
+    </div>
+    <div id="zoom-toolbar">
+        <button id="zoom-in">Zoom in</button>
+        <button id="zoom-out">Zoom out</button>
+        <button id="zoom-to-fit">Zoom to fit</button>
+    </div>
+
+    <script src="../src/awezoom.js"></script>
+    <script>
+        // Initialize Awezoom after page is loaded
+        window.addEventListener('load', function initialize() {
+            var myAwezoomInstance = new Awezoom({
+                selector: '#zoom-container',
+                zoomFactor: 2,
+                zoomLevel: 0.25,
+                minZoomLevel: 0.01
+            });
+
+            document.getElementById('zoom-in').addEventListener('click', 
+                function zoomIn() {
+                    myAwezoomInstance.zoomIn({
+                        x: 0,
+                        y: 0
+                    });
+                }, false);
+
+            document.getElementById('zoom-out').addEventListener('click', 
+                function zoomOut() {
+                    myAwezoomInstance.zoomOut({
+                        x: 0,
+                        y: 0
+                    });
+                }, false);
+
+            document.getElementById('zoom-to-fit').addEventListener('click', 
+                function zoomToFit() {
+                    myAwezoomInstance.zoomToFit();
+                }, false);
+
+            myAwezoomInstance.getZoomContainerElement().addEventListener('click', 
+                function zoomInToMousePosition(event) {
+                    myAwezoomInstance.zoomIn({
+                        x: event.clientX,
+                        y: event.clientY
+                    });
+                });
+
+            myAwezoomInstance.getZoomContainerElement().addEventListener('contextmenu', 
+                function zoomOutToMousePosition(event) {
+                    event.preventDefault();
+
+                    myAwezoomInstance.zoomOut({
+                        x: event.clientX,
+                        y: event.clientY
+                    });
+                });
+        });
+    </script>
+</body>
+</html>
