@@ -3,7 +3,9 @@
 Another CSS3 transition zooming library with the benefit of native scrollbars, focal points and adjustable content alignment. 
 
 ## Demo
-TODO
+[Demo](https://johannulbrich.github.io/awezoom/)
+
+Click to zoom to a certain point (left click = zoom in, right click = zoom out). 
 
 ## Installing
 
