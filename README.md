@@ -1,6 +1,6 @@
 # awezoom
 
-Awesome library to zoom images or every content you want. In difference to all other zooming libraries your zoom container have scrollbars.
+Another CSS3 transition zooming library with the benefit of native scrollbars, focal points and adjustable content alignment. 
 
 ## Demo
 TODO

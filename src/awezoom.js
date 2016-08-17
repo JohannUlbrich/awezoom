@@ -18,6 +18,32 @@
 }(this, function() {
     'use strict';
 
+    // requestAnimationFrame polyfill
+    // http://www.paulirish.com/2011/requestanimationframe-for-smart-animating/
+    (function() {
+        var lastTime = 0;
+        var vendors = ['ms', 'moz', 'webkit', 'o'];
+        for (var x = 0; x < vendors.length && !window.requestAnimationFrame; ++x) {
+            window.requestAnimationFrame = window[vendors[x] + 'RequestAnimationFrame'];
+            window.cancelAnimationFrame = window[vendors[x] + 'CancelAnimationFrame'] || window[vendors[x] + 'CancelRequestAnimationFrame'];
+        }
+
+        if (!window.requestAnimationFrame)
+            window.requestAnimationFrame = function(callback, element) {
+                var currTime = new Date().getTime();
+                var timeToCall = Math.max(0, 16 - (currTime - lastTime));
+                var id = window.setTimeout(function() { callback(currTime + timeToCall); },
+                    timeToCall);
+                lastTime = currTime + timeToCall;
+                return id;
+            };
+
+        if (!window.cancelAnimationFrame)
+            window.cancelAnimationFrame = function(id) {
+                clearTimeout(id);
+            };
+    }());
+
     var _getTransitionEndEvent = function() {
         var element = document.createElement('div');
         var transitions = {
@@ -144,8 +170,8 @@
         });
         _setCSSStyles(zoomContentElement, {
             'position': 'absolute',
-            'transform-origin': '0 0 0',
-            'transition-property': 'transform'
+            'transformOrigin': '0 0 0',
+            'transitionProperty': 'transform'
         });
         _setCSSStyles(placeholderElement, {
             'position': 'absolute'
@@ -355,7 +381,7 @@
         var contentOffset = this._determineIntendedContentOffset(currentZoomLevel);
 
         _setCSSStyles(this._state.zoomContentElement, {
-            'transformOrigin': '',
+            'transformOrigin': '0 0 0',
             'transitionDuration': '',
             'transitionTimingFunction': '',
             'transform': 'matrix(' + currentZoomLevel + ', 0, 0, ' + currentZoomLevel + ', ' + contentOffset.x + ', ' + contentOffset.y + ')'
@@ -566,12 +592,11 @@
                 case 'right':
                     transformOrigin.x = unzoomedContentSize.width;
             }
-        }
 
         // Adjust position on zoom out if the content size is bigger than the zoom container size, before and after transition 
         // and if there is a positive margin on just one side
         // or when the content size trespasses the zoom container size and if there is a positive margin on just one side
-        else if (zoomedContentSize.width >= zoomContainerSize.width) {
+        } else if (zoomedContentSize.width >= zoomContainerSize.width) {
             if (contentMarginAfterZooming.right > 0) {
                 transformOrigin.x -= contentMarginAfterZooming.right / (zoomFactor - 1) / currentZoomLevel;
             }
@@ -579,10 +604,9 @@
             if (contentMarginAfterZooming.left > 0) {
                 transformOrigin.x += contentMarginAfterZooming.left / (zoomFactor - 1) / currentZoomLevel;
             }
-        }
 
         // Adjust position on zoom out when the content size trespasses the zoom container size
-        else if (currentContentSize.width >= zoomContainerSize.width && zoomedContentSize.width <= zoomContainerSize.width) {
+        } else if (currentContentSize.width >= zoomContainerSize.width && zoomedContentSize.width <= zoomContainerSize.width) {
             switch (alignmentSettings.horizontal) {
                 case 'left':
                     transformOrigin.x += contentMarginAfterZooming.left / (zoomFactor - 1) / currentZoomLevel;
@@ -609,12 +633,11 @@
                 case 'bottom':
                     transformOrigin.y = unzoomedContentSize.height;
             }
-        }
 
         // Adjust position on zoom out if the content size is bigger than the zoom container size, before and after transition 
         // and if there is a positive margin on just one side
         // or when the content size trespasses the zoom container size and if there is a positive margin on just one side
-        else if (zoomedContentSize.height >= zoomContainerSize.height) {
+        } else if (zoomedContentSize.height >= zoomContainerSize.height) {
             if (contentMarginAfterZooming.bottom > 0) {
                 transformOrigin.y -= contentMarginAfterZooming.bottom / (zoomFactor - 1) / currentZoomLevel;
             }
@@ -622,10 +645,9 @@
             if (contentMarginAfterZooming.top > 0) {
                 transformOrigin.y += contentMarginAfterZooming.top / (zoomFactor - 1) / currentZoomLevel;
             }
-        }
 
         // Adjust position on zoom out when the content size trespasses the zoom container size
-        else if (currentContentSize.height >= zoomContainerSize.height && zoomedContentSize.height <= zoomContainerSize.height) {
+        } else if (currentContentSize.height >= zoomContainerSize.height && zoomedContentSize.height <= zoomContainerSize.height) {
             switch (alignmentSettings.vertical) {
                 case 'top':
                     transformOrigin.y += contentMarginAfterZooming.top / (zoomFactor - 1) / currentZoomLevel;
