@@ -172,12 +172,12 @@
         });
         _setCSSStyles(placeholderElement, {
             'position': 'absolute',
-            'overflow': 'hidden',
-            'transform-style': 'preserve-3d'
+            'overflow': 'hidden'
         });
         _setCSSStyles(zoomContentElement, {
             'transformOrigin': '0 0 0',
-            'transitionProperty': 'transform'
+            'transitionProperty': 'transform',
+            'willChange': 'transform'
         });
 
         // Parse alignment settings
@@ -265,7 +265,9 @@
             }
 
             // Remove event listener
-            transitionEndEvent && this._state.zoomContentElement.removeEventListener(transitionEndEvent, afterTransition, false);
+            if(transitionEndEvent) {
+                this._state.zoomContentElement.removeEventListener(transitionEndEvent, afterTransition, false);
+            }
 
             // Update states
             this._state.zoomLevel = zoomLevel;
