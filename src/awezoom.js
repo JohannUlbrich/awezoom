@@ -162,19 +162,22 @@
         var placeholderElement = document.createElement('div');
         zoomContainerElement.appendChild(placeholderElement);
 
+        // Place content into placeholder
+        placeholderElement.appendChild(zoomContentElement);
+
         // Add CSS
         _setCSSStyles(zoomContainerElement, {
             'overflow': 'scroll',
-            'position': 'relative',
+            'position': 'relative'
+        });
+        _setCSSStyles(placeholderElement, {
+            'position': 'absolute',
+            'overflow': 'hidden',
             'transform-style': 'preserve-3d'
         });
         _setCSSStyles(zoomContentElement, {
-            'position': 'absolute',
             'transformOrigin': '0 0 0',
             'transitionProperty': 'transform'
-        });
-        _setCSSStyles(placeholderElement, {
-            'position': 'absolute'
         });
 
         // Parse alignment settings
@@ -194,7 +197,8 @@
             alignment: {
                 horizontal: alignmentSettings[0],
                 vertical: alignmentSettings[1]
-            }
+            },
+            transitionEndEvent: _getTransitionEndEvent()
         };
 
         // Add a resize event listener
@@ -238,13 +242,15 @@
         zoomEasing = zoomEasing !== undefined ? zoomEasing : this.settings.zoomEasing;
         zoomDuration = zoomDuration !== undefined ? zoomDuration : this.settings.zoomDuration;
 
+        var transitionEndEvent;
+
         // Function to call after transition has ended
         var afterTransition = (function() {
             // Reinsert content 
             _setCSSStyles(this._state.zoomContentElement, {
-                'transformOrigin': '0 0 0',
                 'transitionDuration': '',
                 'transitionTimingFunction': '',
+                'transformOrigin': '0 0 0',
                 'transform': 'matrix(' + zoomLevel + ', 0, 0, ' + zoomLevel + ', ' + contentOffsetAfterZooming.x + ', ' + contentOffsetAfterZooming.y + ')'
             });
 
@@ -259,7 +265,7 @@
             }
 
             // Remove event listener
-            this._state.zoomContentElement.removeEventListener(transitionEndEvent, afterTransition, false);
+            transitionEndEvent && this._state.zoomContentElement.removeEventListener(transitionEndEvent, afterTransition, false);
 
             // Update states
             this._state.zoomLevel = zoomLevel;
@@ -268,7 +274,6 @@
             this._state.isZooming = false;
         }).bind(this);
 
-        var transitionEndEvent = _getTransitionEndEvent();
         var currentZoomLevel = this._state.zoomLevel;
         var currentContentOffset = this._state.contentOffset;
         var zoomedContentSize = this._getContentSize(zoomLevel);
@@ -326,8 +331,12 @@
             // Call manually if there is no transition event
             afterTransition();
         } else {
+            transitionEndEvent = this._state.transitionEndEvent;
+
             // Position content and set focal point
             _setCSSStyles(this._state.zoomContentElement, {
+                'transitionDuration': '',
+                'transitionTimingFunction': '',
                 'transformOrigin': transformOrigin.x + 'px ' + transformOrigin.y + 'px 0',
                 'transform': 'matrix(' + currentZoomLevel + ', 0, 0, ' + currentZoomLevel + ', ' + transformOffset.x + ', ' + transformOffset.y + ')'
             });
@@ -379,11 +388,13 @@
         var currentZoomLevel = this._state.zoomLevel;
         var currentContentSize = this._getContentSize(currentZoomLevel);
         var contentOffset = this._determineIntendedContentOffset(currentZoomLevel);
+        var zoomEasing = this.settings.zoomEasing;
+        var zoomDuration = this.settings.zoomDuration;
 
         _setCSSStyles(this._state.zoomContentElement, {
+            'transitionDuration': zoomDuration + 'ms',
+            'transitionTimingFunction': zoomEasing,
             'transformOrigin': '0 0 0',
-            'transitionDuration': '',
-            'transitionTimingFunction': '',
             'transform': 'matrix(' + currentZoomLevel + ', 0, 0, ' + currentZoomLevel + ', ' + contentOffset.x + ', ' + contentOffset.y + ')'
         });
 
