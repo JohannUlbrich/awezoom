@@ -79,7 +79,7 @@
                 if (target[prop] && typeof source[prop] === 'object') {
                     deepObjectExtend(target[prop], source[prop]);
                 } else {
-                    target[prop] = source[prop];
+                    target[prop] = source[prop] || target[prop];
                 }
             }
         }
