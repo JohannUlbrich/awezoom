@@ -38,10 +38,7 @@ new Awezoom('#zoom-container');
 
 ```js
 // Initialize with custom settings
-var myAwezoomInstance = new Awezoom({
-    // Selector of the zoom container element
-    selector: '',
-
+var myAwezoomInstance = new Awezoom('#zoom-container', {
     // Initial zoom level
     zoomLevel: 1,
 
@@ -72,6 +69,12 @@ var myAwezoomInstance = new Awezoom({
     }
 });
 ```
+
+## Release Notes
+
+### 0.2.0
+
+* Remove `selector` property from settings object. Now you have to initialize the awezoom instance by passing in a selector string or a DOM node as the first parameter. 
 
 ## License
 See the [LICENSE](https://github.com/JohannUlbrich/awezoom/blob/master/LICENSE) file.

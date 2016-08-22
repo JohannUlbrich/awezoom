@@ -41,8 +41,7 @@
     <script>
         // Initialize Awezoom after page is loaded
         window.addEventListener('load', function initialize() {
-            var myAwezoomInstance = new Awezoom({
-                selector: '#zoom-container',
+            var myAwezoomInstance = new Awezoom('#zoom-container', {
                 zoomFactor: 2,
                 zoomLevel: 0.25,
                 minZoomLevel: 0.01

@@ -7,11 +7,11 @@
     if (typeof define === 'function' && define.amd) {
         define([], factory);
 
-        // Node
+    // Node
     } else if (typeof module === 'object' && module.exports) {
         module.exports = factory();
 
-        // Browser globals
+    // Browser globals
     } else {
         root.Awezoom = factory();
     }
@@ -91,14 +91,11 @@
         return (Math.min(max, Math.max(min, value)));
     };
 
-    var Awezoom = function(args) {
+    var Awezoom = function(element, settings) {
         var that = this;
 
         // Default settings
         this.settings = {
-            // Selector of the zoom container element
-            selector: '',
-
             // Initial zoom level
             zoomLevel: 1,
 
@@ -134,19 +131,23 @@
             // afterZoom: function() {}
         };
 
-        // Parse arguments to initialize the instance
-        if (typeof args === 'string') {
-            this.settings.selector = args;
-        } else if (typeof args === 'object') {
-            this.settings = _deepExtend(this.settings, args);
-        }
+        var zoomContainerElement;
 
-        // Get zoom container element by query selector
-        var zoomContainerElement = document.querySelector(this.settings.selector);
+        // Get zoom container element
+        if (typeof element === 'string') {
+            zoomContainerElement = zoomContainerElement = document.querySelector(element);
+        } else if(element.nodeType && element.nodeType === 1) {
+            zoomContainerElement = element;
+        }
 
         // Ensure that the zoom container exist and has just one child
         if (!zoomContainerElement) {
             return;
+        }
+
+        // Parse settings
+        if (settings && typeof settings === 'object') {
+            this.settings = _deepExtend(this.settings, settings);
         }
 
         var children = zoomContainerElement.children;
@@ -175,6 +176,7 @@
             'overflow': 'hidden'
         });
         _setCSSStyles(zoomContentElement, {
+            'position': 'absolute',
             'transformOrigin': '0 0 0',
             'transitionProperty': 'transform',
             'willChange': 'transform'
@@ -264,6 +266,13 @@
                 this._setScrollPosition(newScrollPosition);
             }
 
+            if(zoomedContentSize.width === 0 && zoomedContentSize.height === 0) {
+                _setCSSStyles(this._state.placeholderElement, {
+                    'width': '',
+                    'height': ''
+                });
+            }
+
             // Remove event listener
             if(transitionEndEvent) {
                 this._state.zoomContentElement.removeEventListener(transitionEndEvent, afterTransition, false);
@@ -319,7 +328,7 @@
 
             this._setScrollPosition(newScrollPosition);
 
-            // On zoom out resize placeholder to remain content size until transition has ended
+        // On zoom out resize placeholder to remain content size until transition has ended
         } else {
             var currentContentSize = this._getContentSize(currentZoomLevel);
 
@@ -386,12 +395,13 @@
         return this._state.zoomContainerElement;
     };
 
-    Awezoom.prototype.position = function() {
+    Awezoom.prototype.position = function(zoomDuration, zoomEasing) {
         var currentZoomLevel = this._state.zoomLevel;
         var currentContentSize = this._getContentSize(currentZoomLevel);
         var contentOffset = this._determineIntendedContentOffset(currentZoomLevel);
-        var zoomEasing = this.settings.zoomEasing;
-        var zoomDuration = this.settings.zoomDuration;
+
+        zoomDuration = zoomDuration !== undefined ? zoomDuration : this.settings.zoomDuration;
+        zoomEasing = zoomEasing !== undefined ? zoomEasing : this.settings.zoomEasing;
 
         _setCSSStyles(this._state.zoomContentElement, {
             'transitionDuration': zoomDuration + 'ms',
@@ -399,6 +409,15 @@
             'transformOrigin': '0 0 0',
             'transform': 'matrix(' + currentZoomLevel + ', 0, 0, ' + currentZoomLevel + ', ' + contentOffset.x + ', ' + contentOffset.y + ')'
         });
+
+        if(currentContentSize.width === 0 && currentContentSize.height === 0) {
+            _setCSSStyles(this._state.placeholderElement, {
+                'width': '',
+                'height': ''
+            });
+
+            return;
+        }
 
         _setCSSStyles(this._state.placeholderElement, {
             'width': (currentContentSize.width + contentOffset.x) + 'px',
