@@ -29,7 +29,7 @@
 </head>
 <body>
     <div id="zoom-container" style="background:#CCC; height:100%; width:100%;">
-        <img src="https://static.pexels.com/photos/28773/pexels-photo-28773.jpg" />
+        <img src="demo.jpg" />
     </div>
     <div id="zoom-toolbar">
         <button id="zoom-in">Zoom in</button>
@@ -41,8 +41,7 @@
     <script>
         // Initialize Awezoom after page is loaded
         window.addEventListener('load', function initialize() {
-            var myAwezoomInstance = new Awezoom({
-                selector: '#zoom-container',
+            var myAwezoomInstance = new Awezoom('#zoom-container', {
                 zoomFactor: 2,
                 zoomLevel: 0.25,
                 minZoomLevel: 0.01
