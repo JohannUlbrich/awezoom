@@ -20,7 +20,7 @@ Just add the script file to your application.
 ```
 
 ## Usage
-Create a container element and place your content inside. But just add one child. If you have multiple elements, you have to wrap it.
+Create a container element and place your content inside.
 
 ```html
 <div id="zoom-container">
@@ -30,8 +30,15 @@ Create a container element and place your content inside. But just add one child
 ```
 
 ```js
-// Initialize with default settings
+// Initialize with selector string and default settings
 new Awezoom('#zoom-container');
+```
+
+```js
+// Initialize with DOM node and default settings
+var zoomContainer = document.getElementByIs('zoom-container');
+
+new Awezoom(zoomContainer);
 ```
 
 ### Initialize with custom settings
@@ -71,6 +78,10 @@ var myAwezoomInstance = new Awezoom('#zoom-container', {
 ```
 
 ## Release Notes
+
+### 0.2.1
+
+* Auto wrap content elements. It's no longer necessary to wrap your content. 
 
 ### 0.2.0
 

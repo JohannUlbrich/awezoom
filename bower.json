@@ -1,7 +1,7 @@
 {
   "name": "awezoom",
   "description": "Another CSS3 transition zooming library with the benefit of native scrollbars, focal points and adjustable content alignment.",
-  "version": "0.1.4",
+  "version": "0.2.1",
   "authors": [
     "Johann Ulbrich <info@johann-ulbrich.de>"
   ],

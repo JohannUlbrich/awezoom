@@ -136,7 +136,7 @@
         // Get zoom container element
         if (typeof element === 'string') {
             zoomContainerElement = zoomContainerElement = document.querySelector(element);
-        } else if(element.nodeType && element.nodeType === 1) {
+        } else if (element.nodeType && element.nodeType === 1) {
             zoomContainerElement = element;
         }
 
@@ -152,12 +152,13 @@
 
         var children = zoomContainerElement.children;
 
-        if (children.length !== 1) {
-            return;
+        if (children.length > 1) {
+            zoomContainerElement.innerHTML = '<div>' + zoomContainerElement.innerHTML + '</div>';
         }
 
         // Get zoom content element
         var zoomContentElement = children[0];
+
 
         // Add a placeholder element
         var placeholderElement = document.createElement('div');
@@ -266,7 +267,7 @@
                 this._setScrollPosition(newScrollPosition);
             }
 
-            if(zoomedContentSize.width === 0 && zoomedContentSize.height === 0) {
+            if (zoomedContentSize.width === 0 && zoomedContentSize.height === 0) {
                 _setCSSStyles(this._state.placeholderElement, {
                     'width': '',
                     'height': ''
@@ -274,7 +275,7 @@
             }
 
             // Remove event listener
-            if(transitionEndEvent) {
+            if (transitionEndEvent) {
                 this._state.zoomContentElement.removeEventListener(transitionEndEvent, afterTransition, false);
             }
 
@@ -410,7 +411,7 @@
             'transform': 'matrix(' + currentZoomLevel + ', 0, 0, ' + currentZoomLevel + ', ' + contentOffset.x + ', ' + contentOffset.y + ')'
         });
 
-        if(currentContentSize.width === 0 && currentContentSize.height === 0) {
+        if (currentContentSize.width === 0 && currentContentSize.height === 0) {
             _setCSSStyles(this._state.placeholderElement, {
                 'width': '',
                 'height': ''
