@@ -79,6 +79,11 @@ var myAwezoomInstance = new Awezoom('#zoom-container', {
 
 ## Release Notes
 
+### 1.0.0
+
+* Add support for pinch to zoom
+* Fix wrong CSS vendor prefixes 
+
 ### 0.2.1
 
 * Auto wrap content elements. It's no longer necessary to wrap your content. 

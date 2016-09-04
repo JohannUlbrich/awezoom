@@ -60,8 +60,9 @@
         }
     };
 
+    // TODO: cache prefixes and fix uppercase style issue
     var _setCSSStyles = function(element, styles) {
-        var vendorPrefixes = ['', 'webkit', 'moz', 'o', 'ms'];
+        var vendorPrefixes = ['', 'webkit', 'Moz', 'ms', 'O'];
 
         for (var style in styles) {
             for (var prop in vendorPrefixes) {
@@ -117,7 +118,7 @@
             zoomEasing: 'ease-in-out',
 
             // CSS transition-duration in milliseconds
-            zoomDuration: 300,
+            zoomDuration: '300ms',
 
             // Default point to zoom in or out
             focalPoint: {
@@ -140,7 +141,7 @@
             zoomContainerElement = element;
         }
 
-        // Ensure that the zoom container exist and has just one child
+        // Ensure that the zoom container exist
         if (!zoomContainerElement) {
             return;
         }
@@ -152,13 +153,13 @@
 
         var children = zoomContainerElement.children;
 
+        // Wrap content if there is more than one child
         if (children.length > 1) {
             zoomContainerElement.innerHTML = '<div>' + zoomContainerElement.innerHTML + '</div>';
         }
 
         // Get zoom content element
         var zoomContentElement = children[0];
-
 
         // Add a placeholder element
         var placeholderElement = document.createElement('div');
@@ -242,8 +243,8 @@
 
         zoomLevel = zoomLevel || this.settings.zoomLevel;
         focalPoint = focalPoint || this.settings.focalPoint;
-        zoomEasing = zoomEasing !== undefined ? zoomEasing : this.settings.zoomEasing;
-        zoomDuration = zoomDuration !== undefined ? zoomDuration : this.settings.zoomDuration;
+        zoomEasing = zoomEasing || this.settings.zoomEasing;
+        zoomDuration = zoomDuration || this.settings.zoomDuration;
 
         var transitionEndEvent;
 
@@ -339,7 +340,7 @@
             });
         }
 
-        if (zoomDuration <= 0 || currentZoomLevel === zoomLevel) {
+        if (zoomDuration.replace(/[^\d\.,]/g,'') <= 0 || currentZoomLevel === zoomLevel) {
             // Call manually if there is no transition event
             afterTransition();
         } else {
@@ -361,10 +362,176 @@
 
             // Zoom the content
             _setCSSStyles(this._state.zoomContentElement, {
-                'transitionDuration': zoomDuration + 'ms',
+                'transitionDuration': zoomDuration,
                 'transitionTimingFunction': zoomEasing,
                 'transform': 'matrix(' + zoomLevel + ', 0, 0, ' + zoomLevel + ', ' + transformOffset.x + ', ' + transformOffset.y + ')'
             });
+        }
+    };
+
+    Awezoom.prototype.pinchStart = function(focalPoint) {
+        if(this._state.isPinching) {
+            return;
+        }
+        
+        this._state.isPinching = true;
+        
+        var currentZoomLevel = this._state.zoomLevel;
+        var currentContentOffset = this._state.contentOffset;
+        var transformOrigin = this._findViewportCoordinatesInRawContent(focalPoint);
+        var transformOffsetToCompensateOrigin = { // Compensate origin
+            x: transformOrigin.x * currentZoomLevel - transformOrigin.x,
+            y: transformOrigin.y * currentZoomLevel - transformOrigin.y
+        };
+        var transformOffset = {
+            x: transformOffsetToCompensateOrigin.x + currentContentOffset.x,
+            y: transformOffsetToCompensateOrigin.y + currentContentOffset.y
+        };
+        
+        
+        
+        var zoomContainerSize = this._getZoomContainerSize();
+        var zoomedContentSize = this._getContentSize(currentZoomLevel);
+        
+        if(zoomContainerSize.width > zoomedContentSize.width) {
+            _setCSSStyles(this._state.placeholderElement, {
+                'width': '100%'
+            });
+        }
+        
+        if(zoomContainerSize.height > zoomedContentSize.height) {
+            _setCSSStyles(this._state.placeholderElement, {
+                'height': '100%'
+            });
+        }
+        
+        // Position content and set focal point
+        _setCSSStyles(this._state.zoomContentElement, {
+            'transitionDuration': '',
+            'transitionTimingFunction': '',
+            'transformOrigin': transformOrigin.x + 'px ' + transformOrigin.y + 'px 0',
+            'transform': 'matrix(' + currentZoomLevel + ', 0, 0, ' + currentZoomLevel + ', ' + transformOffset.x + ', ' + transformOffset.y + ')'
+        });
+        
+        this._state.lastFocalPoint = this._findRawCoordinatesInViewport(transformOrigin);
+        this._state.lastOffset = transformOffset;
+        this._state.lastOrigin = transformOrigin;
+        this._state.lastZoomLevel = currentZoomLevel;
+    };
+
+    Awezoom.prototype.pinchMove = function(scale) {
+        var zoomLevel = scale * this._state.zoomLevel;
+
+        if (zoomLevel < this.settings.minZoomLevel || zoomLevel > this.settings.maxZoomLevel) {
+            return;
+        }
+        
+        // Zoom
+        _setCSSStyles(this._state.zoomContentElement, {
+            'transform': 'matrix(' + zoomLevel + ', 0, 0, ' + zoomLevel + ', ' + this._state.lastOffset.x + ', ' + this._state.lastOffset.y + ')'
+        });
+        
+        this._state.lastPinchZoomLevel = zoomLevel;
+    };
+
+    Awezoom.prototype.pinchEnd = function() {
+        if(!this._state.isPinching) {
+            return;
+        }
+        
+        // Function to call after transition has ended
+        var afterTransition = (function() {
+            // Reinsert content 
+            _setCSSStyles(this._state.zoomContentElement, {
+                'transitionDuration': '',
+                'transitionTimingFunction': '',
+                'transformOrigin': '0 0 0',
+                'transform': 'matrix(' + zoomLevel + ', 0, 0, ' + zoomLevel + ', ' + contentOffsetAfterZooming.x + ', ' + contentOffsetAfterZooming.y + ')'
+            });
+
+            _setCSSStyles(this._state.placeholderElement, {
+                'width': (zoomedContentSize.width + contentOffsetAfterZooming.x) + 'px',
+                'height': (zoomedContentSize.height + contentOffsetAfterZooming.y) + 'px'
+            });
+
+            this._setScrollPosition(newScrollPosition);
+
+            // Remove event listener
+            if (transitionEndEvent) {
+                this._state.zoomContentElement.removeEventListener(transitionEndEvent, afterTransition, false);
+            }
+            
+            // Update states
+            this._state.zoomLevel = zoomLevel;
+            this._state.contentOffset = contentOffsetAfterZooming;
+            
+            this._state.lastFocalPoint = null;
+            this._state.lastOffset = null;
+            this._state.lastOrigin = null;
+            this._state.lastZoomLevel = null;
+            this._state.lastPinchZoomLevel = null;
+            
+            this._state.isPinching = false;
+        }).bind(this);
+        
+        var zoomEasing = this.settings.zoomEasing;
+        var zoomDuration = this.settings.zoomDuration;
+        
+        var zoomLevel = this._state.lastPinchZoomLevel;
+
+        // Calculate Offset
+        var zoomContainerSize = this._getZoomContainerSize();
+        var zoomedContentSize = this._getContentSize(zoomLevel);
+        var contentOffsetAfterZooming = this._determineIntendedContentOffset(zoomLevel);
+        var contentMarginAfterZooming = this._determineContentMargin(zoomLevel, this._state.lastFocalPoint);
+        var transformOffset = {
+            x: this._state.lastOffset.x,
+            y: this._state.lastOffset.y,
+        };
+        
+        if(zoomedContentSize.width > zoomContainerSize.width) {
+            transformOffset.x -= contentMarginAfterZooming.left > 0 ? contentMarginAfterZooming.left : 0;
+            transformOffset.x += contentMarginAfterZooming.right > 0 ? contentMarginAfterZooming.right : 0;
+        } else {
+            transformOffset.x += (contentOffsetAfterZooming.x - contentMarginAfterZooming.left);
+        }
+        
+        if(zoomedContentSize.height > zoomContainerSize.height) {
+            transformOffset.y -= contentMarginAfterZooming.top > 0 ? contentMarginAfterZooming.top : 0;
+            transformOffset.y += contentMarginAfterZooming.bottom > 0 ? contentMarginAfterZooming.bottom : 0;
+        } else {
+            transformOffset.y += (contentOffsetAfterZooming.y - contentMarginAfterZooming.top);
+        }
+        
+        // Trigger a reflow to set the transform matrix above before using a transition 
+        //var offsetHeight = this._state.zoomContentElement.offsetHeight;
+        
+        // Calculate scroll position
+        var focalPointInZoomedContent = this._findRawCoordinatesInZoomedContent(this._state.lastOrigin, zoomLevel);
+        var viewportCoordinates = this._state.lastFocalPoint;
+        var maxScrollPosition = {
+            x: (zoomedContentSize.width - zoomContainerSize.width > 0) ? (zoomedContentSize.width - zoomContainerSize.width) : 0,
+            y: (zoomedContentSize.height - zoomContainerSize.height > 0) ? (zoomedContentSize.height - zoomContainerSize.height) : 0
+        };
+        var newScrollPosition = {
+            x: _valueBetween(focalPointInZoomedContent.x - viewportCoordinates.x, 0, maxScrollPosition.x),
+            y: _valueBetween(focalPointInZoomedContent.y - viewportCoordinates.y, 0, maxScrollPosition.y)
+        };
+        
+        if(this._state.lastOffset.x !== transformOffset.x || this._state.lastOffset.y !== transformOffset.y) {
+            var transitionEndEvent = this._state.transitionEndEvent;
+            
+            // Add event listener to execute afterTransition()
+            this._state.zoomContentElement.addEventListener(transitionEndEvent, afterTransition, false);
+            
+            // Move to correct position
+            _setCSSStyles(this._state.zoomContentElement, {
+                'transitionDuration': zoomDuration,
+                'transitionTimingFunction': zoomEasing,
+                'transform': 'matrix(' + zoomLevel + ', 0, 0, ' + zoomLevel + ', ' + transformOffset.x + ', ' + transformOffset.y + ')'
+            });
+        } else {
+            afterTransition();
         }
     };
 
@@ -401,11 +568,11 @@
         var currentContentSize = this._getContentSize(currentZoomLevel);
         var contentOffset = this._determineIntendedContentOffset(currentZoomLevel);
 
-        zoomDuration = zoomDuration !== undefined ? zoomDuration : this.settings.zoomDuration;
-        zoomEasing = zoomEasing !== undefined ? zoomEasing : this.settings.zoomEasing;
+        zoomDuration = zoomDuration || this.settings.zoomDuration;
+        zoomEasing = zoomEasing || this.settings.zoomEasing;
 
         _setCSSStyles(this._state.zoomContentElement, {
-            'transitionDuration': zoomDuration + 'ms',
+            'transitionDuration': zoomDuration,
             'transitionTimingFunction': zoomEasing,
             'transformOrigin': '0 0 0',
             'transform': 'matrix(' + currentZoomLevel + ', 0, 0, ' + currentZoomLevel + ', ' + contentOffset.x + ', ' + contentOffset.y + ')'
@@ -441,7 +608,7 @@
     Awezoom.prototype._getContentSize = function(zoomLevel) {
         var element = this._state.zoomContentElement;
 
-        // the size of an element including padding, borders and scrollbar
+        // offsetWidth and offsetHeight is the size of an element including padding, borders and scrollbars
         // the size isn't affected by CSS transformations, so it returns the original size
         var unzoomedContentSize = {
             width: element.offsetWidth,
