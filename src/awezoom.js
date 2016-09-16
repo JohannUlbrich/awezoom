@@ -384,6 +384,11 @@
         }
         
         this._state.isPinching = true;
+
+        // Subtract container position from focal point
+        var zoomContainerElementBoundingRect = this._state.zoomContainerElement.getBoundingClientRect();
+        focalPoint.x -= zoomContainerElementBoundingRect.left;
+        focalPoint.y -= zoomContainerElementBoundingRect.top;
         
         var currentZoomLevel = this._state.zoomLevel;
         var currentContentOffset = this._state.contentOffset;

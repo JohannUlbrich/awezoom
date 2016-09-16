@@ -79,6 +79,10 @@ var myAwezoomInstance = new Awezoom('#zoom-container', {
 
 ## Release Notes
 
+### 0.2.4
+
+* Fix wrong focal point position when zoom container isn't aligned left and top.
+
 ### 0.2.2
 
 * Improve performance.
