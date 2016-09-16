@@ -291,6 +291,11 @@
             this._state.isZooming = false;
         }).bind(this);
 
+        // Subtract container position from focal point
+        var zoomContainerElementBoundingRect = this._state.zoomContainerElement.getBoundingClientRect();
+        focalPoint.x -= zoomContainerElementBoundingRect.left;
+        focalPoint.y -= zoomContainerElementBoundingRect.top;
+
         var currentZoomLevel = this._state.zoomLevel;
         var currentContentOffset = this._state.contentOffset;
         var zoomedContentSize = this._getContentSize(zoomLevel);
@@ -675,6 +680,7 @@
         var currentZoomLevel = this._state.zoomLevel;
         var currentContentOffset = this._state.contentOffset;
         var currentScrollPosition = this._getScrollPosition();
+        var zoomContainerElementBoundingRect = this._state.zoomContainerElement.getBoundingClientRect();
 
         return {
             x: (coordinates.x * currentZoomLevel) + currentContentOffset.x - currentScrollPosition.x,
