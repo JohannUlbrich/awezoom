@@ -79,10 +79,10 @@ var myAwezoomInstance = new Awezoom('#zoom-container', {
 
 ## Release Notes
 
-### 1.0.0
+### 0.2.2
 
-* Add support for pinch to zoom
-* Fix wrong CSS vendor prefixes 
+* Improve performance.
+* Add support for pinch to zoom.
 
 ### 0.2.1
 
@@ -91,6 +91,11 @@ var myAwezoomInstance = new Awezoom('#zoom-container', {
 ### 0.2.0
 
 * Remove `selector` property from settings object. Now you have to initialize the awezoom instance by passing in a selector string or a DOM node as the first parameter. 
+
+### 1.0.0
+
+* Add support for pinch to zoom
+* Fix wrong CSS vendor prefixes 
 
 ## License
 See the [LICENSE](https://github.com/JohannUlbrich/awezoom/blob/master/LICENSE) file.
