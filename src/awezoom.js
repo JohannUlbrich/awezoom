@@ -241,6 +241,8 @@
 
         this._state.isZooming = true;
 
+        this._cacheState();
+
         zoomLevel = zoomLevel || this.settings.zoomLevel;
         focalPoint = focalPoint || this.settings.focalPoint;
         zoomEasing = zoomEasing || this.settings.zoomEasing;
@@ -283,6 +285,8 @@
             // Update states
             this._state.zoomLevel = zoomLevel;
             this._state.contentOffset = contentOffsetAfterZooming;
+
+            this._clearState();
 
             this._state.isZooming = false;
         }).bind(this);
@@ -596,6 +600,10 @@
     };
 
     Awezoom.prototype._getZoomContainerSize = function() {
+        if(this._temp && this._temp.zoomContainerSize) {
+            return this._temp.zoomContainerSize;
+        }
+
         var element = this._state.zoomContainerElement;
 
         // the inner size of an element including the padding
@@ -606,6 +614,15 @@
     };
 
     Awezoom.prototype._getContentSize = function(zoomLevel) {
+        if(this._temp && this._temp.contentSize) {
+            zoomLevel = zoomLevel || 1;
+
+            return {
+                width: this._temp.contentSize.width * zoomLevel,
+                height: this._temp.contentSize.height * zoomLevel
+            };
+        }
+
         var element = this._state.zoomContentElement;
 
         // offsetWidth and offsetHeight is the size of an element including padding, borders and scrollbars
@@ -621,6 +638,20 @@
             width: unzoomedContentSize.width * zoomLevel,
             height: unzoomedContentSize.height * zoomLevel
         };
+    };
+
+    Awezoom.prototype._cacheState = function() {
+        this._temp = {
+            zoomContainerSize: this._getZoomContainerSize(),
+            contentSize: this._getContentSize(),
+            zoomLevel: this._state.zoomLevel,
+            scrollPosition: this._getScrollPosition(),
+            contentOffset: this._state.contentOffset
+        };
+    };
+
+    Awezoom.prototype._clearState = function() {
+        this._temp = null;
     };
 
     Awezoom.prototype._findViewportCoordinatesInRawContent = function(coordinates) {
@@ -659,6 +690,10 @@
     };
 
     Awezoom.prototype._getScrollPosition = function() {
+        if(this._temp && this._temp.scrollPosition) {
+            return this._temp.scrollPosition;
+        }
+
         var element = this._state.zoomContainerElement;
 
         return {
