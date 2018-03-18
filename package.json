@@ -1,0 +1,31 @@
+{
+  "name": "awezoom",
+  "version": "1.0.0",
+  "description": "Another CSS3 transition zooming library with the benefit of native scrollbars, focal points and adjustable content alignment.",
+  "main": "dist/awezoom.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "webpack --mode development"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/JohannUlbrich/awezoom.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/JohannUlbrich/awezoom/issues"
+  },
+  "homepage": "https://github.com/JohannUlbrich/awezoom#readme",
+  "devDependencies": {
+    "babel-core": "^6.26.0",
+    "babel-loader": "^7.1.4",
+    "babel-plugin-add-module-exports": "^0.2.1",
+    "babel-preset-es2015": "^6.24.1",
+    "babel-preset-stage-0": "^6.24.1",
+    "clean-webpack-plugin": "^0.1.19",
+    "webpack": "^4.1.1",
+    "webpack-cli": "^2.0.12"
+  }
+}

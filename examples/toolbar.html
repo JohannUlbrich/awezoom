@@ -37,52 +37,89 @@
         <button id="zoom-to-fit">Zoom to fit</button>
     </div>
 
-    <script src="../src/awezoom.js"></script>
+    <script src="../dist/awezoom.js"></script>
     <script>
         // Initialize Awezoom after page is loaded
         window.addEventListener('load', function initialize() {
             var myAwezoomInstance = new Awezoom('#zoom-container', {
-                zoomFactor: 2,
                 zoomLevel: 0.25,
-                minZoomLevel: 0.01
+                minZoomLevel: 0.01,
+                beforeZoom: function() {
+                    console.log('started');
+                },
+                afterZoom: function() {
+                    console.log('ended');
+                }
             });
 
+            var zoomContainerElement = myAwezoomInstance.state.zoomContainerElement;
+
+            // Get click position relative to the zoom container
+            var calculateRelativePosition = function calculateRelativePosition(position) {
+                // Subtract container position from focal point
+                var zoomContainerElementBoundingRect = zoomContainerElement.getBoundingClientRect();
+
+                return {
+                    x: position.x - zoomContainerElementBoundingRect.left,
+                    y: position.y - zoomContainerElementBoundingRect.top
+                };
+            };
+
+            // Add click listener to the zoom-in button
             document.getElementById('zoom-in').addEventListener('click', 
                 function zoomIn() {
+                    var zoomContainerSize = myAwezoomInstance.calculateZoomContainerSize();
+
                     myAwezoomInstance.zoomIn({
-                        x: 0,
-                        y: 0
+                        x: zoomContainerSize.width / 2,
+                        y: zoomContainerSize.height / 2
                     });
                 }, false);
 
+            // Add click listener to the zoom-out button
             document.getElementById('zoom-out').addEventListener('click', 
                 function zoomOut() {
+                    var zoomContainerSize = myAwezoomInstance.calculateZoomContainerSize();
+
                     myAwezoomInstance.zoomOut({
-                        x: 0,
-                        y: 0
+                        x: zoomContainerSize.width / 2,
+                        y: zoomContainerSize.height / 2
                     });
                 }, false);
 
+            // Add click listener to the zoom-to-fit button
             document.getElementById('zoom-to-fit').addEventListener('click', 
                 function zoomToFit() {
                     myAwezoomInstance.zoomToFit();
                 }, false);
 
-            myAwezoomInstance.getZoomContainerElement().addEventListener('click', 
+            // Zoom-in on left-click
+            zoomContainerElement.addEventListener('click', 
                 function zoomInToMousePosition(event) {
-                    myAwezoomInstance.zoomIn({
-                        x: event.clientX,
+                    var position = calculateRelativePosition({
+                        x: event.clientX, 
                         y: event.clientY
+                    });
+
+                    myAwezoomInstance.zoomIn({
+                        x: position.x,
+                        y: position.y
                     });
                 });
 
-            myAwezoomInstance.getZoomContainerElement().addEventListener('contextmenu', 
+            // Zoom-out on right-click
+            zoomContainerElement.addEventListener('contextmenu', 
                 function zoomOutToMousePosition(event) {
                     event.preventDefault();
 
-                    myAwezoomInstance.zoomOut({
-                        x: event.clientX,
+                    var position = calculateRelativePosition({
+                        x: event.clientX, 
                         y: event.clientY
+                    });
+
+                    myAwezoomInstance.zoomOut({
+                        x: position.x,
+                        y: position.y
                     });
                 });
         });

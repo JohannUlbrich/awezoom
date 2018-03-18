@@ -58,10 +58,11 @@ var myAwezoomInstance = new Awezoom('#zoom-container', {
     // Default factor to zoom in or out
     zoomFactor: 2,
 
-    // Horizontal and vertical alignment of the content if it is smaller than the zoom container
-    // the first value is the horizontal position (left, center, right)
-    // and the second value is the vertical (top, center, bottom)
-    alignment: 'center center',
+    // Alignment of the content if it is smaller than the zoom container
+    alignment: {
+        horizontal: 'left', // left, center, right
+        vertical: 'top' // top, center, bottom
+    }
 
     // CSS transition-timing-function
     zoomEasing: 'ease-in-out',
@@ -79,6 +80,15 @@ var myAwezoomInstance = new Awezoom('#zoom-container', {
 
 ## Release Notes
 
+### 1.0.0
+
+* 
+
+### 0.2.5
+
+* Add support for pinch to zoom
+* Fix wrong CSS vendor prefixes 
+
 ### 0.2.4
 
 * Fix wrong focal point position when zoom container isn't aligned left and top.
@@ -95,11 +105,6 @@ var myAwezoomInstance = new Awezoom('#zoom-container', {
 ### 0.2.0
 
 * Remove `selector` property from settings object. Now you have to initialize the awezoom instance by passing in a selector string or a DOM node as the first parameter. 
-
-### 1.0.0
-
-* Add support for pinch to zoom
-* Fix wrong CSS vendor prefixes 
 
 ## License
 See the [LICENSE](https://github.com/JohannUlbrich/awezoom/blob/master/LICENSE) file.
