@@ -218,8 +218,8 @@ var parseSettings = function parseSettings(settings) {
 
     // onInit: function() {},
     // onDestroy: function() {},
-    beforeZoom: function beforeZoom() {},
-    afterZoom: function afterZoom() {}
+    beforeZoomCallback: function beforeZoomCallback() {},
+    afterZoomCallback: function afterZoomCallback() {}
   };
 
   var resultSettings = {};
@@ -443,11 +443,13 @@ var Awezoom = function () {
     value: function zoom() {
       var zoomLevel = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : this.settings.zoomLevel;
       var focalPoint = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : this.settings.focalPoint;
+      var zoomDuration = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : this.settings.zoomDuration;
+      var zoomEasing = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : this.settings.zoomEasing;
 
       var _this2 = this;
 
-      var zoomDuration = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : this.settings.zoomDuration;
-      var zoomEasing = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : this.settings.zoomEasing;
+      var beforeZoomCallback = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : this.settings.beforeZoomCallback;
+      var afterZoomCallback = arguments.length > 5 && arguments[5] !== undefined ? arguments[5] : this.settings.afterZoomCallback;
 
       if (this.state.isZooming) {
         return;
@@ -460,7 +462,7 @@ var Awezoom = function () {
       this.state.isZooming = true;
 
       // Call before zoom callback method
-      this.settings.beforeZoom();
+      beforeZoomCallback();
 
       this.update();
 
@@ -550,7 +552,7 @@ var Awezoom = function () {
         _this2.state.isZooming = false;
 
         // Call after zoom callback method
-        _this2.settings.afterZoom();
+        afterZoomCallback();
       };
 
       if (zoomDuration.replace(/[^\d\.,]/g, '') <= 0 || currentZoomLevel === zoomLevel) {
