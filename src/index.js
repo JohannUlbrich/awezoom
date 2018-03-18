@@ -118,8 +118,8 @@ const parseSettings = function parseSettings(settings) {
 
     // onInit: function() {},
     // onDestroy: function() {},
-    beforeZoom: function() {},
-    afterZoom: function() {}
+    beforeZoomCallback: function() {},
+    afterZoomCallback: function() {}
   };
 
   let resultSettings = {};
@@ -331,7 +331,8 @@ export default class Awezoom {
 
   // Zoom
   zoom(zoomLevel = this.settings.zoomLevel, focalPoint = this.settings.focalPoint,
-    zoomDuration = this.settings.zoomDuration, zoomEasing = this.settings.zoomEasing) {
+    zoomDuration = this.settings.zoomDuration, zoomEasing = this.settings.zoomEasing, 
+    beforeZoomCallback = this.settings.beforeZoomCallback, afterZoomCallback = this.settings.afterZoomCallback) {
     if (this.state.isZooming) {
       return;
     }
@@ -343,7 +344,7 @@ export default class Awezoom {
     this.state.isZooming = true;
 
     // Call before zoom callback method
-    this.settings.beforeZoom();
+    beforeZoomCallback();
 
     this.update();
 
@@ -433,7 +434,7 @@ export default class Awezoom {
       this.state.isZooming = false;
 
       // Call after zoom callback method
-      this.settings.afterZoom();
+      afterZoomCallback();
     };
 
     if (zoomDuration.replace(/[^\d\.,]/g, '') <= 0 || currentZoomLevel === zoomLevel) {
