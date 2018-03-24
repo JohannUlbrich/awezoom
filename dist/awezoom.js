@@ -76,16 +76,11 @@ return /******/ (function(modules) { // webpackBootstrap
 /******/
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = "./src/index.js");
+/******/ 	return __webpack_require__(__webpack_require__.s = 0);
 /******/ })
 /************************************************************************/
-/******/ ({
-
-/***/ "./src/index.js":
-/*!**********************!*\
-  !*** ./src/index.js ***!
-  \**********************/
-/*! no static exports found */
+/******/ ([
+/* 0 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -102,7 +97,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 /*!
-* awezoom v1.0.0
+* awezoom v1.0.1
 * https://github.com/JohannUlbrich/awezoom
 *
 * Copyright (c) 2016 Johann Ulbrich <info@johann-ulbrich.de>
@@ -939,6 +934,8 @@ var Awezoom = function () {
 
             this.state.isZooming = true;
 
+            this.update();
+
             var currentZoomLevel = this.state.zoomLevel;
             var currentZoomContainerSize = this.state.zoomContainerSize;
             var currentContentSize = this.state.contentSize;
@@ -1105,7 +1102,5 @@ exports.default = Awezoom;
 module.exports = exports['default'];
 
 /***/ })
-
-/******/ });
+/******/ ]);
 });
-//# sourceMappingURL=awezoom.js.map

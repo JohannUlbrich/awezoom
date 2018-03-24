@@ -26,7 +26,7 @@
         <img src="demo.jpg" />
     </div>
 
-    <script src="http://hammerjs.github.io/dist/hammer.min.js"></script>
+    <script src="https://hammerjs.github.io/dist/hammer.min.js"></script>
     <script src="../dist/awezoom.js"></script>
     <script>
 
@@ -47,21 +47,18 @@
             });
 
             hammertime.on('pinchstart', function(event) {
-                myAwezoomInstance.pinchStart({
+                myAwezoomInstance.pinch('pinchstart', {
                     x: event.center.x,
                     y: event.center.y
                 });
             });
 
             hammertime.on('pinchmove', function(event) {
-                myAwezoomInstance.pinchMove(event.scale, {
-                    x: event.center.x,
-                    y: event.center.y
-                });
+                myAwezoomInstance.pinch('pinchmove', {}, event.scale);
             });
             
             hammertime.on('pinchend', function(event) {
-                myAwezoomInstance.pinchEnd();
+                myAwezoomInstance.pinch('pinchend');
             });
         });
     </script>

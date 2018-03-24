@@ -1,5 +1,5 @@
 /*!
-* awezoom v1.0.0
+* awezoom v1.0.1
 * https://github.com/JohannUlbrich/awezoom
 *
 * Copyright (c) 2016 Johann Ulbrich <info@johann-ulbrich.de>
@@ -780,6 +780,8 @@ export default class Awezoom {
         }
 
         this.state.isZooming = true;
+
+        this.update();
 
         const currentZoomLevel = this.state.zoomLevel;
         const currentZoomContainerSize = this.state.zoomContainerSize;

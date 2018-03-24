@@ -80,9 +80,15 @@ var myAwezoomInstance = new Awezoom('#zoom-container', {
 
 ## Release Notes
 
+### 1.0.1
+
+* Fix wrong scroll position bug when using pinch-to-zoom. 
+
 ### 1.0.0
 
-* 
+* Rewrite in ES6.
+* Use webpack 4.
+* Set focal point relative to zoom container.
 
 ### 0.2.5
 
